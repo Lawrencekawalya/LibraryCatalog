@@ -18,7 +18,10 @@ class LibraryItem<T> {
      this.itemID = itemID;
  }
 
- // Getters and Setters (if needed)
+ // Getter method for itemID
+ public int getItemID() {
+     return itemID;
+ }
 
  // Override toString() for easy printing
  @Override
@@ -40,11 +43,8 @@ class LibraryItem<T> {
  }
 }
 
-// Additional classes for different types of library items
-
-class Book extends LibraryItem<Book> {
-    // Additional attributes specific to books (if needed)
-    
+//classes for different types of library items
+class Book extends LibraryItem<Book> {  
     // Constructor
     public Book(String title, String author, int itemID) {
         super(title, author, itemID);
@@ -52,9 +52,7 @@ class Book extends LibraryItem<Book> {
     }
 }
 
-class DVD extends LibraryItem<DVD> {
-    // Additional attributes specific to DVDs (if needed)
-    
+class DVD extends LibraryItem<DVD> {    
     // Constructor
     public DVD(String title, String author, int itemID) {
         super(title, author, itemID);
@@ -62,117 +60,172 @@ class DVD extends LibraryItem<DVD> {
     }
 }
 
-// Generic Catalog class
+//Generic Catalog class
 class Catalog<T extends LibraryItem<?>> {
-    private List<T> items;
+ private List<T> items;
 
-    // Constructor
-    public Catalog() {
-        items = new ArrayList<>();
-    }
+ // Constructor
+ public Catalog() {
+     items = new ArrayList<>();
+ }
 
-    // Method to add a new library item to the catalog
-    public void addItem(T item) {
-        items.add(item);
-    }
+ // Method to add a new library item to the catalog
+ public void addItem(T item, String itemType) {
+     items.add(item);
+     System.out.println("New " + itemType + " added successfully.");
+ }
 
-    // Method to remove a library item from the catalog
-    public void removeItem(T item) {
-        if (items.contains(item)) {
-            items.remove(item);
-            System.out.println("Item removed successfully.");
-        } else {
-            System.out.println("Item not found in the catalog. Unable to remove.");
-        }
-    }
+ // Method to remove a library item from the catalog
+ public void removeItem(T item) {
+     if (items.contains(item)) {
+         items.remove(item);
+         System.out.println("Item removed successfully.");
+     } else {
+         System.out.println("Item not found in the catalog. Unable to remove.");
+     }
+ }
 
-    // Method to retrieve item details
-    public void viewCatalog() {
-        if (items.isEmpty()) {
-            System.out.println("The catalog is empty.");
-        } else {
-            System.out.println("Library Catalog:");
-            for (T item : items) {
-                System.out.println(item);
-            }
-        }
-    }
+ // Method to retrieve item details
+ public void viewCatalog() {
+     if (items.isEmpty()) {
+         System.out.println("The catalog is empty.");
+     } else {
+         System.out.println("Library Catalog:");
+
+         // Separate books and DVDs
+         List<T> books = new ArrayList<>();
+         List<T> dvds = new ArrayList<>();
+
+         // Separate items based on type
+         for (T item : items) {
+             if (item instanceof Book) {
+                 books.add(item);
+             } else if (item instanceof DVD) {
+                 dvds.add(item);
+             }
+         }
+
+         // Display books
+         if (!books.isEmpty()) {
+             System.out.println("\nBooks:");
+             for (T book : books) {
+                 System.out.println(book);
+             }
+         } else {
+             System.out.println("No books in the catalog.");
+         }
+
+         // Display DVDs
+         if (!dvds.isEmpty()) {
+             System.out.println("\nDVDs:");
+             for (T dvd : dvds) {
+                 System.out.println(dvd);
+             }
+         } else {
+             System.out.println("No DVDs in the catalog.");
+         }
+     }
+ }
+
+ // Method to get the list of items
+ public List<T> getItems() {
+     return items;
+ }
 }
 
 //Main class for the user interface
 public class LibraryCatalogApp {
- public static void main(String[] args) {
-     // Create a generic catalog
-     Catalog<LibraryItem<?>> libraryCatalog = new Catalog<>();
+  public static void main(String[] args) {
+      // Create a generic catalog
+      Catalog<LibraryItem<?>> libraryCatalog = new Catalog<>();
 
-     // Scanner for user input
-     Scanner scanner = new Scanner(System.in);
+      // Scanner for user input
+      Scanner scanner = new Scanner(System.in);
 
-     int choice;
-     do {
-         // Display menu
-         System.out.println("\nLibrary Catalog Menu:");
-         System.out.println("1. Add a new library item");
-         System.out.println("2. Remove an item");
-         System.out.println("3. View the current catalog");
-         System.out.println("0. Exit");
+      int choice;
+      do {
+          // Display menu
+          System.out.println("\nLibrary Catalog Menu:");
+          System.out.println("1. Add a new library item");
+          System.out.println("2. Remove an item");
+          System.out.println("3. View the current catalog");
+          System.out.println("0. Exit");
 
-         // Get user choice
-         System.out.print("Enter your choice: ");
-         choice = scanner.nextInt();
+          // Get user choice
+          System.out.print("Enter your choice: ");
+          choice = scanner.nextInt();
 
-         switch (choice) {
-             case 1:
-                 // Add a new library item               
-            	 System.out.println("Enter item details:");
-            	 System.out.print("Title: ");
-            	 // Consume the newline character left from the previous input
-            	 scanner.nextLine();
-            	 String title = scanner.nextLine();
-            	 System.out.print("Author: ");
-            	 String author = scanner.nextLine();
-            	 System.out.print("ItemID: ");
-            	 int itemID = scanner.nextInt();
+          switch (choice) {
+              case 1:
+                  // Add a new library item
+                  System.out.println("Enter item details:");
+                  System.out.print("Title: ");
+                  scanner.nextLine(); // Consume the newline character left from the previous input
+                  String title = scanner.nextLine();
+                  System.out.print("Author: ");
+                  String author = scanner.nextLine();
+                  System.out.print("ItemID: ");
+                  int itemID = scanner.nextInt();
 
-                 // Create a new LibraryItem (you can choose Book, DVD, etc. based on your hierarchy)
-                 LibraryItem<?> newItem = new LibraryItem<>(title, author, itemID);
+                  // Prompt user to specify item type (book or DVD)
+                  System.out.println("Enter item type (1 for Book, 2 for DVD): ");
+                  int itemType = scanner.nextInt();
 
-                 // Add the item to the catalog
-                 libraryCatalog.addItem(newItem);
-                 System.out.println("Item added successfully.");
-                 break;
-
-             case 2:
+                  LibraryItem<?> newItem;
+                  if (itemType == 1) {
+                      // Create a new Book object
+                      newItem = new Book(title, author, itemID);
+                      libraryCatalog.addItem(newItem, "book");
+                  } else if (itemType == 2) {
+                      // Create a new DVD object
+                      newItem = new DVD(title, author, itemID);
+                      libraryCatalog.addItem(newItem, "DVD");
+                  } else {
+                      System.out.println("Invalid item type. Item not added to catalog.");
+                  }
+                  break;
+                  
+              case 2:
             	    // Remove an item
             	    System.out.print("Enter the ItemID of the item to remove: ");
             	    int removeItemID = scanner.nextInt();
 
-            	    // Create a dummy item with the given ItemID for comparison
-            	    LibraryItem<?> itemToRemove = new LibraryItem<>("", "", removeItemID);
+            	    // Search for the item in the catalog
+            	    boolean found = false;
+            	    for (LibraryItem<?> item : libraryCatalog.getItems()) {
+            	        if (item.getItemID() == removeItemID) {
+            	            libraryCatalog.removeItem(item);
+            	            found = true;
+            	            break;
+            	        }
+            	    }
 
-            	    // Remove the item from the catalog
-            	    libraryCatalog.removeItem(itemToRemove);
+            	    // If item not found, display error message
+            	    if (!found) {
+            	        System.out.println("Item not found in the catalog. Unable to remove.");
+            	    }
             	    break;
 
-             case 3:
-                 // View the current catalog
-                 libraryCatalog.viewCatalog();
-                 break;
 
-             case 0:
-                 // Exit the program
-                 System.out.println("Exiting the Library Catalog App. Goodbye!");
-                 break;
+              case 3:
+                  // View the current catalog
+                  libraryCatalog.viewCatalog();
+                  break;
 
-             default:
-                 System.out.println("Invalid choice. Please enter a valid option.");
-         }
+              case 0:
+                  // Exit the program
+                  System.out.println("Exiting the Library Catalog App. Goodbye!");
+                  break;
 
-     } while (choice != 0);
+              default:
+                  System.out.println("Invalid choice. Please enter a valid option.");
+          }
 
-     // Close the scanner
-     scanner.close();
- }
+      } while (choice != 0);
+
+      // Close the scanner
+      scanner.close();
+  }
 }
 
 
