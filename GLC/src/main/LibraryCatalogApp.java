@@ -2,6 +2,7 @@ package main;
 
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 
 
@@ -135,98 +136,128 @@ class Catalog<T extends LibraryItem<?>> {
 
 //Main class for the user interface
 public class LibraryCatalogApp {
-  public static void main(String[] args) {
-      // Create a generic catalog
-      Catalog<LibraryItem<?>> libraryCatalog = new Catalog<>();
+    public static void main(String[] args) {
+        // Create a generic catalog
+        Catalog<LibraryItem<?>> libraryCatalog = new Catalog<>();
 
-      // Scanner for user input
-      Scanner scanner = new Scanner(System.in);
+        // Scanner for user input
+        Scanner scanner = new Scanner(System.in);
 
-      int choice;
-      do {
-          // Display menu
-          System.out.println("\nLibrary Catalog Menu:");
-          System.out.println("1. Add a new library item");
-          System.out.println("2. Remove an item");
-          System.out.println("3. View the current catalog");
-          System.out.println("0. Exit");
+        int choice;
+        do {
+            // Display menu
+            System.out.println("\nLibrary Catalog Menu:");
+            System.out.println("1. Add a new library item");
+            System.out.println("2. Remove an item");
+            System.out.println("3. View the current catalog");
+            System.out.println("0. Exit");
 
-          // Get user choice
-          System.out.print("Enter your choice: ");
-          choice = scanner.nextInt();
+            // Get user choice with exception handling
+            try {
+                System.out.print("Enter your choice: ");
+                choice = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                // Catch exception if user input is not an integer
+                System.out.println("Invalid input. Please enter a valid integer choice.");
+                scanner.nextLine(); // Consume the invalid input
+                choice = -1; // Set choice to an invalid value to repeat the loop
+            }
 
-          switch (choice) {
-              case 1:
-                  // Add a new library item
-                  System.out.println("Enter item details:");
-                  System.out.print("Title: ");
-                  scanner.nextLine(); // Consume the newline character left from the previous input
-                  String title = scanner.nextLine();
-                  System.out.print("Author: ");
-                  String author = scanner.nextLine();
-                  System.out.print("ItemID: ");
-                  int itemID = scanner.nextInt();
+            switch (choice) {
+                case 1:
+                    // Add a new library item
+                    System.out.println("Enter item details:");
+                    System.out.print("Title: ");
+                    scanner.nextLine(); // Consume the newline character left from the previous input
+                    String title = scanner.nextLine();
+                    System.out.print("Author: ");
+                    String author = scanner.nextLine();
 
-                  // Prompt user to specify item type (book or DVD)
-                  System.out.println("Enter item type (1 for Book, 2 for DVD): ");
-                  int itemType = scanner.nextInt();
+                    // Get itemID with exception handling
+                    int itemID = 0;
+                    try {
+                        System.out.print("ItemID: ");
+                        itemID = scanner.nextInt();
+                    } catch (InputMismatchException e) {
+                        // Catch exception if user input for itemID is not an integer
+                        System.out.println("Invalid input. Please enter a valid integer for itemID.");
+                        scanner.nextLine(); // Consume the invalid input
+                        break; // Exit the current case and repeat the loop
+                    }
 
-                  LibraryItem<?> newItem;
-                  if (itemType == 1) {
-                      // Create a new Book object
-                      newItem = new Book(title, author, itemID);
-                      libraryCatalog.addItem(newItem, "book");
-                  } else if (itemType == 2) {
-                      // Create a new DVD object
-                      newItem = new DVD(title, author, itemID);
-                      libraryCatalog.addItem(newItem, "DVD");
-                  } else {
-                      System.out.println("Invalid item type. Item not added to catalog.");
-                  }
-                  break;
+                    // Prompt user to specify item type (book or DVD)
+                    System.out.println("Enter item type (1 for Book, 2 for DVD): ");
+                    try {
+                        int itemType = scanner.nextInt();
+
+                        LibraryItem<?> newItem;
+                        if (itemType == 1) {
+                            // Create a new Book object
+                            newItem = new Book(title, author, itemID);
+                            libraryCatalog.addItem(newItem, "book");
+                        } else if (itemType == 2) {
+                            // Create a new DVD object
+                            newItem = new DVD(title, author, itemID);
+                            libraryCatalog.addItem(newItem, "DVD");
+                        } else {
+                            System.out.println("Invalid item type. Item not added to catalog.");
+                        }
+                    } catch (InputMismatchException e) {
+                        // Catch exception if user input for item type is not an integer
+                        System.out.println("Invalid input. Please enter a valid integer for item type.");
+                        scanner.nextLine(); // Consume the invalid input
+                    }
+                    break;
                   
-              case 2:
-            	    // Remove an item
-            	    System.out.print("Enter the ItemID of the item to remove: ");
-            	    int removeItemID = scanner.nextInt();
+                case 2:
+                    // Remove an item
+                    System.out.print("Enter the ItemID of the item to remove: ");
+                    try {
+                        int removeItemID = scanner.nextInt();
 
-            	    // Search for the item in the catalog
-            	    boolean found = false;
-            	    for (LibraryItem<?> item : libraryCatalog.getItems()) {
-            	        if (item.getItemID() == removeItemID) {
-            	            libraryCatalog.removeItem(item);
-            	            found = true;
-            	            break;
-            	        }
-            	    }
+                        // Search for the item in the catalog
+                        boolean found = false;
+                        for (LibraryItem<?> item : libraryCatalog.getItems()) {
+                            if (item.getItemID() == removeItemID) {
+                                libraryCatalog.removeItem(item);
+                                found = true;
+                                break;
+                            }
+                        }
 
-            	    // If item not found, display error message
-            	    if (!found) {
-            	        System.out.println("Item not found in the catalog. Unable to remove.");
-            	    }
-            	    break;
+                        // If item not found, display error message
+                        if (!found) {
+                            System.out.println("Item not found in the catalog. Unable to remove.");
+                        }
+                    } catch (InputMismatchException e) {
+                        // Catch exception if user input for item ID is not an integer
+                        System.out.println("Invalid input. Please enter a valid integer for item ID.");
+                        scanner.nextLine(); // Consume the invalid input
+                    }
+                    break;
 
+                case 3:
+                    // View the current catalog
+                    libraryCatalog.viewCatalog();
+                    break;
 
-              case 3:
-                  // View the current catalog
-                  libraryCatalog.viewCatalog();
-                  break;
+                case 0:
+                    // Exit the program
+                    System.out.println("Exiting the Library Catalog App. Goodbye!");
+                    break;
 
-              case 0:
-                  // Exit the program
-                  System.out.println("Exiting the Library Catalog App. Goodbye!");
-                  break;
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+            }
 
-              default:
-                  System.out.println("Invalid choice. Please enter a valid option.");
-          }
+        } while (choice != 0);
 
-      } while (choice != 0);
-
-      // Close the scanner
-      scanner.close();
-  }
+        // Close the scanner
+        scanner.close();
+    }
 }
+
+
 
 
 
